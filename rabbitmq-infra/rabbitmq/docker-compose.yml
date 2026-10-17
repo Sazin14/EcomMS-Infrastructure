@@ -1,0 +1,23 @@
+# RabbitMQ for local development.   docker compose up -d
+# Management UI: http://localhost:15672  (user admin / the password below)
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: ecom-rabbitmq
+    ports:
+      - "5672:5672"      # AMQP (the services connect here)
+      - "15672:15672"    # management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+      RABBITMQ_DEFAULT_VHOST: ecom        # creates the "ecom" virtual host the services use
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq   # messages survive a restart
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  rabbitmq_data:
